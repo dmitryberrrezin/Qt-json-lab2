@@ -4,24 +4,81 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , test(nullptr)
 {
     ui->setupUi(this);
     this->setFixedSize(this->size());
-    QFile questions(QCoreApplication::applicationDirPath() + "/questions.json");
-    if(!questions.open(QIODevice::ReadWrite))
+    connect(ui->start, SIGNAL(triggered()), this, SLOT(StartTest()));
+    connect(ui->submit, SIGNAL(clicked()), this, SLOT(NoTest()));
+
+    for(auto it: ui->groupBox->children())
     {
-        throw -1;
+        radio_vector.append(static_cast<QRadioButton*>(it));
     }
 
-     QByteArray saveData = questions.readAll();
-     QJsonDocument js_doc(QJsonDocument::fromJson(saveData));
+    radio_vector.pop_front();
+}
 
-     QJsonObject main_obj = js_doc.toVariant().toJsonObject();
-     qDebug() << main_obj["questions"].toArray()[0];
+void MainWindow::StartTest()
+{
+    if(test != nullptr)
+    {
+        delete test;
+    }
+    test = new Test;
+    disconnect(ui->submit, SIGNAL(clicked()), this, SLOT(NoTest()));
+    connect(ui->submit, SIGNAL(clicked()), this, SLOT(NextQuestion()));
+    radio_vector[0]->setChecked(true);
+    NextQuestion();
+}
 
-    QJsonObject question_node = main_obj["questions"].toArray()[0].toVariant().toJsonObject();
-    qDebug() << question_node["question"];
+void MainWindow::NextQuestion()
+{
+    bool isAnswer = false;
+    for(auto &it:radio_vector)
+    {
+        if(it->isChecked())
+        {
+            isAnswer = true;
+            it->setAutoExclusive(false);
+            it->setChecked(false);
+            it->setAutoExclusive(true);
+        }
+    }
+    if(!isAnswer)
+    {
+        QMessageBox::information(this, "error", "give the answer");
+        return;
+    }
 
+    QJsonObject cur_question = test->getQuestion();
+    qDebug() << cur_question;
+    if(cur_question.isEmpty())
+    {
+        disconnect(ui->submit, SIGNAL(clicked()), this, SLOT(NextQuestion()));
+        connect(ui->submit, SIGNAL(clicked()), this, SLOT(NoTest()));
+        ui->questionEdit->setText("");
+        ui->groupBox->setChecked(false);
+        for(auto &it:radio_vector)
+        {
+            it->setText("");
+        }
+        QMessageBox::information(this, "success", "Test passed");
+        return;
+    }
+
+    ui->questionEdit->setText(cur_question["question"].toString());
+    QJsonArray answers = cur_question["answers"].toArray();
+
+    for(int i = 0; i < radio_vector.size(); ++i)
+    {
+        radio_vector[i]->setText(answers[i].toString());
+    }
+}
+
+void MainWindow::NoTest()
+{
+    QMessageBox::information(this, "warning", "test not started");
 }
 
 MainWindow::~MainWindow()

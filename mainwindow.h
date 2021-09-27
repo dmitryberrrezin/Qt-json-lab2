@@ -1,13 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
+#include "test.h"
 
-#include <qDebug>
+#include <QMainWindow>
+#include <QRadioButton>
+#include <QDebug>
+#include <QVector>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,5 +22,15 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    Test *test;
+    QVector<QRadioButton*> radio_vector;
+
+signals:
+   void submitted();
+
+private slots:
+    void StartTest();
+    void NextQuestion();
+    void NoTest();
 };
 #endif // MAINWINDOW_H
