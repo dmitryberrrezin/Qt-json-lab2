@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setFixedSize(this->size());
     connect(ui->start, SIGNAL(triggered()), this, SLOT(StartTest()));
     connect(ui->submit, SIGNAL(clicked()), this, SLOT(NoTest()));
+    connect(ui->statistic, SIGNAL(triggered()), this, SLOT(ShowStat()));
 
     for(auto it: ui->groupBox->children())
     {
@@ -21,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::StartTest()
 {
+    ui->menu->setEnabled(false);
     if(test != nullptr)
     {
         delete test;
@@ -35,14 +37,16 @@ void MainWindow::StartTest()
 void MainWindow::NextQuestion()
 {
     bool isAnswer = false;
-    for(auto &it:radio_vector)
+    for(int i = 0; i < radio_vector.size(); ++i)
     {
-        if(it->isChecked())
+        if(radio_vector[i]->isChecked())
         {
             isAnswer = true;
-            it->setAutoExclusive(false);
-            it->setChecked(false);
-            it->setAutoExclusive(true);
+            radio_vector[i]->setAutoExclusive(false);
+            radio_vector[i]->setChecked(false);
+            radio_vector[i]->setAutoExclusive(true);
+            test->toAnswer(i+1);
+            break;
         }
     }
     if(!isAnswer)
@@ -63,22 +67,46 @@ void MainWindow::NextQuestion()
         {
             it->setText("");
         }
-        QMessageBox::information(this, "success", "Test passed");
+        QString res = "result: " + QString::number(test->GetCorrect()) + "/" + QString::number(test->QuestionCount());
+        QMessageBox::information(this, "success", res);
+        ui->menu->setEnabled(true);
         return;
     }
 
     ui->questionEdit->setText(cur_question["question"].toString());
     QJsonArray answers = cur_question["answers"].toArray();
-
     for(int i = 0; i < radio_vector.size(); ++i)
     {
         radio_vector[i]->setText(answers[i].toString());
     }
 }
 
+void MainWindow::ShowStat()
+{
+   QFile file(QCoreApplication::applicationDirPath() + "/statistics.json");
+   if(!file.open(QIODevice::ReadOnly))
+   {
+       QMessageBox::information(this, "error", "no statistics");
+       return;
+   }
+
+   QByteArray data = file.readAll();
+   file.close();
+   QJsonDocument stat_doc = QJsonDocument::fromJson(data);
+   QJsonArray attempts = stat_doc["attempts"].toArray();
+
+   QString toEdit;
+   for(int i = 0; i < attempts.size(); ++i)
+   {
+       toEdit += "attempt №" + QString::number(i+1) + ":\n";
+       toEdit += QString::number(attempts[i].toObject()["correct"].toInt()) + "/" + QString::number(attempts[i].toObject()["total"].toInt()) + "\n\n";
+   }
+   ui->questionEdit->setText(toEdit);
+}
+
 void MainWindow::NoTest()
 {
-    QMessageBox::information(this, "warning", "test not started");
+    QMessageBox::information(this, "warning", "test is not started");
 }
 
 MainWindow::~MainWindow()

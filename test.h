@@ -15,13 +15,16 @@ private:
     int current_question;
     QJsonDocument questions_doc;
     QJsonArray questions;
-
+    int correct_answ;
+    void UpdateStat();
 
 public:
     Test();
-    bool isValid();
-    int QuestionCount();
     QJsonObject getQuestion();
+    void toAnswer(int number);
+    bool isValid() const;
+    int QuestionCount() const;
+    int GetCorrect() const;
 };
 
 #endif // TEST_H

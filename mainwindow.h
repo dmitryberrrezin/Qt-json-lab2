@@ -32,5 +32,6 @@ private slots:
     void StartTest();
     void NextQuestion();
     void NoTest();
+    void ShowStat();
 };
 #endif // MAINWINDOW_H
