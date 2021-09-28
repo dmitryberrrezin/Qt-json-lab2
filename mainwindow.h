@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "test.h"
+#include "question_redact.h"
 
 #include <QMainWindow>
 #include <QRadioButton>
@@ -33,5 +34,6 @@ private slots:
     void NextQuestion();
     void NoTest();
     void ShowStat();
+    void NewQuestion();
 };
 #endif // MAINWINDOW_H

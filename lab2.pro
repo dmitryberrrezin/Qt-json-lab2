@@ -11,14 +11,17 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    question_redact.cpp \
     test.cpp
 
 HEADERS += \
     mainwindow.h \
+    question_redact.h \
     test.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    question_redact.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

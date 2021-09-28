@@ -11,12 +11,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->start, SIGNAL(triggered()), this, SLOT(StartTest()));
     connect(ui->submit, SIGNAL(clicked()), this, SLOT(NoTest()));
     connect(ui->statistic, SIGNAL(triggered()), this, SLOT(ShowStat()));
+    connect(ui->add, SIGNAL(triggered()), this, SLOT(NewQuestion()));
 
     for(auto it: ui->groupBox->children())
     {
         radio_vector.append(static_cast<QRadioButton*>(it));
     }
-
     radio_vector.pop_front();
 }
 
@@ -102,6 +102,12 @@ void MainWindow::ShowStat()
        toEdit += QString::number(attempts[i].toObject()["correct"].toInt()) + "/" + QString::number(attempts[i].toObject()["total"].toInt()) + "\n\n";
    }
    ui->questionEdit->setText(toEdit);
+}
+
+void MainWindow::NewQuestion()
+{
+    question_redact *redactor = new question_redact(this);
+    redactor->exec();
 }
 
 void MainWindow::NoTest()
