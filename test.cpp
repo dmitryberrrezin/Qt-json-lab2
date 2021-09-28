@@ -11,17 +11,21 @@ Test::Test():
     questions_doc = QJsonDocument::fromJson(data);
     if(questions_doc.isEmpty() || questions_doc.isNull())
     {
-        QMessageBox::information(nullptr, "Error", "Invalid File");
+        QMessageBox::critical(nullptr, "Error", "Invalid File");
         return;
     }
     questions = questions_doc["questions"].toArray();
+    if(questions.isEmpty())
+    {
+        QMessageBox::critical(nullptr, "Error", "No questions yet");
+        return;
+    }
 }
 
 QJsonObject Test::getQuestion()
 {
     if(current_question == QuestionCount())
     {
-        qDebug() << correct_answ << "/" << QuestionCount();
         UpdateStat();
         return QJsonObject();
     }

@@ -2,11 +2,11 @@
 #define MAINWINDOW_H
 
 #include "test.h"
+#include "delete.h"
 #include "question_redact.h"
 
 #include <QMainWindow>
 #include <QRadioButton>
-#include <QDebug>
 #include <QVector>
 
 QT_BEGIN_NAMESPACE
@@ -35,5 +35,6 @@ private slots:
     void NoTest();
     void ShowStat();
     void NewQuestion();
+    void DeleteQuestion();
 };
 #endif // MAINWINDOW_H

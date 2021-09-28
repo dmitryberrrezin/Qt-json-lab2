@@ -2,6 +2,14 @@
 #define QUESTION_REDACT_H
 
 #include <QDialog>
+#include <QVector>
+#include <QRadioButton>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
 
 namespace Ui {
 class question_redact;
@@ -17,6 +25,10 @@ public:
 
 private:
     Ui::question_redact *ui;
+    QVector<QRadioButton*> radio_vector;
+    QVector<QLineEdit*> edit_vector;
+private slots:
+    void AddQuestion();
 };
 
 #endif // QUESTION_REDACT_H

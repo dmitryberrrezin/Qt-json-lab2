@@ -7,7 +7,6 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
-#include <QDebug>
 
 class Test
 {

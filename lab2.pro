@@ -9,17 +9,20 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    delete.cpp \
     main.cpp \
     mainwindow.cpp \
     question_redact.cpp \
     test.cpp
 
 HEADERS += \
+    delete.h \
     mainwindow.h \
     question_redact.h \
     test.h
 
 FORMS += \
+    delete.ui \
     mainwindow.ui \
     question_redact.ui
 

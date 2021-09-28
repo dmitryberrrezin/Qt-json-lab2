@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->submit, SIGNAL(clicked()), this, SLOT(NoTest()));
     connect(ui->statistic, SIGNAL(triggered()), this, SLOT(ShowStat()));
     connect(ui->add, SIGNAL(triggered()), this, SLOT(NewQuestion()));
+    connect(ui->del, SIGNAL(triggered()), this, SLOT(DeleteQuestion()));
 
     for(auto it: ui->groupBox->children())
     {
@@ -22,12 +23,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::StartTest()
 {
-    ui->menu->setEnabled(false);
     if(test != nullptr)
     {
         delete test;
     }
     test = new Test;
+    if(!test->isValid())
+        return;
+    ui->menu->setEnabled(false);
     disconnect(ui->submit, SIGNAL(clicked()), this, SLOT(NoTest()));
     connect(ui->submit, SIGNAL(clicked()), this, SLOT(NextQuestion()));
     radio_vector[0]->setChecked(true);
@@ -51,12 +54,11 @@ void MainWindow::NextQuestion()
     }
     if(!isAnswer)
     {
-        QMessageBox::information(this, "error", "give the answer");
+        QMessageBox::critical(this, "error", "give the answer");
         return;
     }
 
     QJsonObject cur_question = test->getQuestion();
-    qDebug() << cur_question;
     if(cur_question.isEmpty())
     {
         disconnect(ui->submit, SIGNAL(clicked()), this, SLOT(NextQuestion()));
@@ -86,7 +88,7 @@ void MainWindow::ShowStat()
    QFile file(QCoreApplication::applicationDirPath() + "/statistics.json");
    if(!file.open(QIODevice::ReadOnly))
    {
-       QMessageBox::information(this, "error", "no statistics");
+       QMessageBox::warning(this, "error", "no statistics");
        return;
    }
 
@@ -94,6 +96,11 @@ void MainWindow::ShowStat()
    file.close();
    QJsonDocument stat_doc = QJsonDocument::fromJson(data);
    QJsonArray attempts = stat_doc["attempts"].toArray();
+   if(attempts.isEmpty())
+   {
+       QMessageBox::warning(this, "error", "No attempts yet");
+       return;
+   }
 
    QString toEdit;
    for(int i = 0; i < attempts.size(); ++i)
@@ -106,8 +113,14 @@ void MainWindow::ShowStat()
 
 void MainWindow::NewQuestion()
 {
-    question_redact *redactor = new question_redact(this);
-    redactor->exec();
+    question_redact redactor(this);
+    redactor.exec();
+}
+
+void MainWindow::DeleteQuestion()
+{
+    Delete deleter(this);
+    deleter.exec();
 }
 
 void MainWindow::NoTest()
